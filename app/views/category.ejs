@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- Category Section -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">Category: <%= categoryName %></h1>
+  
+  <!-- Filter Options (optional) -->
+  <div class="flex justify-between items-center mb-4">
+      <div class="flex space-x-4">
+          <select class="border rounded-md p-2">
+              <option value="default">Sort by</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+          </select>
+      </div>
+      <div>
+          <input type="text" placeholder="Search in this category..." class="border rounded-md p-2">
+      </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% products.forEach(product => { %>
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+              <img src="<%= product.imageUrl %>" alt="<%= product.name %>" class="w-full h-48 object-cover">
+              <div class="p-4">
+                  <h2 class="font-semibold text-lg"><%= product.name %></h2>
+                  <p class="text-gray-600 mt-1">$<%= product.price.toFixed(2) %></p>
+                  <p class="text-gray-500 mt-2"><%= product.description %></p>
+                  <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Add to Cart</button>
+              </div>
+          </div>
+      <% }) %>
+      <!-- Example Product Card -->
+      <!-- Add more product cards dynamically from the products array -->
+  </div>
+</div>
+
+<%- include('partials/footer') %>

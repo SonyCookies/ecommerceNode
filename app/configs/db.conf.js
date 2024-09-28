@@ -6,8 +6,8 @@ const sequelize = new Sequelize("ecommerce_node", "root", "", {
   logging: false,
 });
 
-const initModels = require("../models/index");
-initModels(sequelize);
+// const initModels = require("../models/index");
+// initModels(sequelize);
 
 const connectDB = async () => {
   try {
