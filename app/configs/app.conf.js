@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
-const indexRoute = require("../routes/index.route");
+const indexR = require("../routes/index.route");
+const productR = require("../routes/product.route");
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/src", express.static(path.join(__dirname, "src")));
 
 app.use(express.json());
-app.use("/", indexRoute);
+app.use("/", indexR);
+app.use("/products", productR);
 
 module.exports = app;
