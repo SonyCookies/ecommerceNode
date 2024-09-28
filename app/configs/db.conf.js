@@ -6,14 +6,17 @@ const sequelize = new Sequelize("ecommerce_node", "root", "", {
   logging: false,
 });
 
+const initModels = require("../models/index");
+initModels(sequelize);
+
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log("Connection to the database has been established successfully.");
-    await sequelize.sync();
+    console.log("Connected to Database");
+    await sequelize.sync({ force: true });
   } catch (error) {
     console.error("Unable to connect to the database:", error);
-    process.exit(1); 
+    process.exit(1);
   }
 };
 
