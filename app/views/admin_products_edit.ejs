@@ -1,0 +1,42 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- Edit Product Form -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">Edit Product</h1>
+
+  <form action="/admin/products/edit/<%= product.id %>" method="POST">
+    <div class="mb-4">
+      <label class="block text-gray-700">Name</label>
+      <input type="text" name="name" value="<%= product.name %>" class="border rounded-md p-2 w-full">
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700">Description</label>
+      <textarea name="description" class="border rounded-md p-2 w-full"><%= product.description %></textarea>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700">Price</label>
+      <input type="number" name="price" value="<%= product.price %>" step="0.01" class="border rounded-md p-2 w-full">
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700">Stock</label>
+      <input type="number" name="stock" value="<%= product.stock %>" class="border rounded-md p-2 w-full">
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700">Category</label>
+      <select name="categoryId" class="border rounded-md p-2 w-full">
+        <% categories.forEach(category => { %>
+          <option value="<%= category.id %>" <%= category.id === product.categoryId ? 'selected' : '' %>><%= category.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Save Changes</button>
+  </form>
+</div>
+
+

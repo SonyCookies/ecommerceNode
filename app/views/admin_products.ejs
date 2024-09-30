@@ -1,0 +1,78 @@
+<%- include('partials/head') %>
+
+<nav class="bg-white shadow sticky top-0">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-lg font-bold">Admin</div>
+            <div>
+                <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-800 mx-4">Dashboard</a>
+                <a href="/admin/products" class="text-gray-600 hover:text-gray-800 mx-4">Products</a>
+                <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a>
+                <a href="/admin/settings" class="text-gray-600 hover:text-gray-800 mx-4">Settings</a>
+                
+                <a href="/admin/logout" class="text-gray-600 hover:text-gray-800 mx-4">Logout</a>
+            </div>
+        </div>
+    </div>
+  </nav>
+  
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">Products</h1>
+
+  <!-- Search and Filter Form -->
+  <form method="GET" action="/admin/products" class="mb-8 flex justify-between items-center">
+    <div class="flex space-x-4 w-full">
+      <select name="sort" class="border rounded-md p-2">
+        <option value="default">Sort by</option>
+        <option value="price-asc" <%= sort === 'price-asc' ? 'selected' : '' %>>Price: Low to High</option>
+        <option value="price-desc" <%= sort === 'price-desc' ? 'selected' : '' %>>Price: High to Low</option>
+      </select>
+      <select name="category" class="border rounded-md p-2">
+        <option value="">All Categories</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.id %>" <%= selectedCategory == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+        <% }) %>
+      </select>
+
+      <div class="bg-blue-0 w-full flex space-x-4">
+        <input type="text" name="search" value="<%= search %>" placeholder="Search products..." class="border rounded-md p-2 w-full block">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="mb-4 flex">
+    <a href="/admin/add-product" class="px-4  py-2 rounded-md text-white bg-blue-500">Add Product</a>
+  </div>
+
+  <!-- Products Table -->
+  <table class="min-w-full bg-white rounded-lg shadow-md border-collapse border border-slate-500 table-auto" id="productsTable">
+    <thead class="p-4">
+      <tr class="p-4">
+        <th class="p-4">Name</th>
+        <th class="p-4">Category</th>
+        <th class="p-4">Price</th>
+        <th class="p-4">Stock</th>
+        <th class="p-4">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="text-center">
+      <% products.forEach(product => { %>
+        <tr>
+          <td class="py-2 px-4"><%= product.name %></td>
+          <td class="py-2 px-4"><%= product.category.name %></td>
+          <td class="py-2 px-4">$<%= product.price.toFixed(2) %></td>
+          <td class="py-2 px-4"><%= product.stock %></td>
+          <td class="py-2 px-4">
+            <a href="/admin/products/edit/<%= product.id %>?" class="text-blue-600">Edit</a> |
+            <form action="/admin/products/delete/<%= product.id %>?_method=DELETE" method="POST" style="display:inline;">
+              <button type="submit" class="text-red-600">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
