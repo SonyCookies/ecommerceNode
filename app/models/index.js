@@ -10,6 +10,7 @@ const Order = require("./Order")(sequelize, DataTypes);
 const OrderItem = require("./OrderItem")(sequelize, DataTypes);
 const Address = require("./Address")(sequelize, DataTypes);
 const Payment = require("./Payment")(sequelize, DataTypes);
+const Admin = require('./Admin')(sequelize, DataTypes)
 
 const applyAssociations = () => {
   User.hasMany(Order, { foreignKey: "userId", as: "orders" });
@@ -25,6 +26,9 @@ const applyAssociations = () => {
 
   Address.belongsTo(User, { foreignKey: "userId", as: "user" });
   Payment.belongsTo(Order, { foreignKey: "orderId", as: "order" });
+
+  // admin
+  Admin.hasMany(Order, { foreignKey: "adminId", as: "orders" }); // Optional: if admin manages orders
 };
 
 applyAssociations();
@@ -37,4 +41,5 @@ module.exports = {
   OrderItem,
   Address,
   Payment,
+  Admin,
 };
