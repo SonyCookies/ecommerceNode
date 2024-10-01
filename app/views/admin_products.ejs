@@ -1,0 +1,93 @@
+<%- include('partials/head') %>
+
+<nav class="bg-white shadow sticky top-0">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-lg font-bold">Admin</div>
+            <div>
+                <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-800 mx-4">Dashboard</a>
+                <a href="/admin/products" class="text-gray-600 hover:text-gray-800 mx-4">Products</a>
+                <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a>
+                <a href="/admin/settings" class="text-gray-600 hover:text-gray-800 mx-4">Settings</a>
+                
+                <a href="/admin/logout" class="text-gray-600 hover:text-gray-800 mx-4">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">Products</h1>
+
+  <!-- Search and Filter Form -->
+  <form id="filterForm" method="GET" action="/admin/products" class="mb-8 flex justify-between items-center">
+    <div class="flex space-x-4 w-full">
+      <select id="sort" name="sort" class="border rounded-md p-2">
+        <option value="default">Sort by</option>
+        <option value="price-asc" <%= sort === 'price-asc' ? 'selected' : '' %>>Price: Low to High</option>
+        <option value="price-desc" <%= sort === 'price-desc' ? 'selected' : '' %>>Price: High to Low</option>
+      </select>
+      <select id="category" name="category" class="border rounded-md p-2">
+        <option value="">All Categories</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.id %>" <%= selectedCategory == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+        <% }) %>
+      </select>
+
+      <div class="bg-blue-0 w-full flex space-x-4">
+        <input id="search" type="text" name="search" value="<%= search %>" placeholder="Search products..." class="border rounded-md p-2 w-full block">
+      </div>
+    </div>
+  </form>
+
+  <div class="mb-4 flex">
+    <a href="/admin/add-product" class="px-4  py-2 rounded-md text-white bg-blue-500">Add Product</a>
+  </div>
+
+  <!-- Include the Products Table Partial -->
+  <div id="productsTable">
+    <%- include('partials/admin_products', { products: products }) %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search');
+    const sortSelect = document.getElementById('sort');
+    const categorySelect = document.getElementById('category');
+    const productsTable = document.getElementById('productsTable');
+
+    let typingTimer; // Timer identifier for debouncing
+    const typingInterval = 100; // Delay in ms (300ms)
+
+    // Function to fetch products and update the table
+    function fetchProducts() {
+      const searchQuery = searchInput.value;
+      const sortQuery = sortSelect.value;
+      const categoryQuery = categorySelect.value;
+
+      // Send an AJAX request to fetch products
+      const xhr = new XMLHttpRequest();
+      const queryParams = `search=${searchQuery}&sort=${sortQuery}&category=${categoryQuery}`;
+      xhr.open('GET', `/admin/products/partial?${queryParams}`, true);
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // To detect an AJAX request
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          // Replace the products table with the new data (partial reload)
+          productsTable.innerHTML = xhr.responseText;
+        }
+      };
+      xhr.send();
+    }
+
+    // Add event listeners for real-time interaction
+    searchInput.addEventListener('input', function() {
+      clearTimeout(typingTimer); // Clear the previous timer
+      typingTimer = setTimeout(fetchProducts, typingInterval); // Set a new timer
+    });
+    
+    sortSelect.addEventListener('change', fetchProducts);
+    categorySelect.addEventListener('change', fetchProducts);
+  });
+</script>
+
