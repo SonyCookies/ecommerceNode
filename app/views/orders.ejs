@@ -1,0 +1,77 @@
+<%- include('partials/head') %>
+
+
+
+<%- include('partials/navbar') %>
+
+<div class="container mx-auto p-8">
+  <h1 class="text-3xl font-bold mb-8">Your Orders</h1>
+
+  <% if (orders.length > 0) { %> <% orders.forEach(order => { %>
+  <div class="order mb-6 p-6 bg-white shadow-lg rounded-lg">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-2xl font-semibold">
+          Order #<%= order.id %> - Total: $<%= order.total.toFixed(2) %>
+        </h2>
+        <p class="text-gray-600">
+          Status:
+          <span
+            class="<%= order.status === 'pending' ? 'text-yellow-500' : 'text-green-500' %>"
+            ><%= order.status %></span
+          >
+        </p>
+        <p class="text-gray-500">
+          Placed on: <%= new Date(order.createdAt).toLocaleDateString() %>
+        </p>
+      </div>
+      <% if (order.status === 'pending') { %>
+      <button
+        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition"
+        onclick="window.location.href='/checkout/confirm?orderId=<%= order.id %>'"
+      >
+        Checkout
+      </button>
+      <% } %>
+    </div>
+
+    <button
+      class="toggle-items bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
+      onclick="toggleOrderItems(<%= order.id %>)"
+    >
+      <span id="toggle-button-text-<%= order.id %>">View Order Items</span>
+    </button>
+
+    <div id="order-items-<%= order.id %>" class="order-items hidden mt-4">
+      <% order.orderItems.forEach(item => { %>
+      <div class="item border-b py-4">
+        <p class="font-semibold">Product: <%= item.product.name %></p>
+        <p>Quantity: <%= item.quantity %></p>
+        <p>Price: $<%= item.price.toFixed(2) %></p>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+  <% }) %> <% } else { %>
+  <p class="text-gray-500">You haven't placed any orders yet.</p>
+  <% } %>
+</div>
+
+<script>
+  function toggleOrderItems(orderId) {
+    const itemsContainer = document.getElementById(`order-items-${orderId}`);
+    const toggleButtonText = document.getElementById(
+      `toggle-button-text-${orderId}`
+    );
+
+    if (itemsContainer.classList.contains("hidden")) {
+      itemsContainer.classList.remove("hidden");
+      toggleButtonText.innerText = "Hide Order Items";
+    } else {
+      itemsContainer.classList.add("hidden");
+      toggleButtonText.innerText = "View Order Items";
+    }
+  }
+</script>
+
+<%- include('partials/footer') %>
