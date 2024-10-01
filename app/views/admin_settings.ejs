@@ -1,0 +1,130 @@
+<%- include('partials/head') %>
+
+<nav class="bg-white shadow sticky top-0">
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+      <div class="text-lg font-bold">Admin</div>
+      <div>
+        <a
+          href="/admin/dashboard"
+          class="text-gray-600 hover:text-gray-800 mx-4"
+          >Dashboard</a
+        >
+        <a href="/admin/products" class="text-gray-600 hover:text-gray-800 mx-4"
+          >Products</a
+        >
+
+        <a href="/admin/settings" class="text-gray-600 hover:text-gray-800 mx-4"
+          >Settings</a
+        >
+        <a href="/admin/logout" class="text-gray-600 hover:text-gray-800 mx-4"
+          >Logout</a
+        >
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="">
+    <h1 class="text-2xl font-bold mb-6">Admin Settings</h1>
+  </div>
+
+  <!-- List of All Admins -->
+  <div class="bg-white p-8 rounded-md shadow mb-4">
+    <h2 class="text-lg font-bold mb-4">All Admins</h2>
+    <ul class="mb-8">
+      <% admins.forEach(admins => { %>
+      <li class="flex justify-between items-center mb-2 p-4 border-b">
+        <span>
+          <%= admins.name %> (<%= admins.email %>)
+        </span>
+        <% if (admins.id !== currentAdminId) { %>
+        <form
+          action="/admin/settings/delete-admin"
+          method="POST"
+          class="inline"
+        >
+          <input type="hidden" name="adminId" value="<%= admins.id %>" />
+          <button type="submit" class="text-red-600">Delete</button>
+        </form>
+        <% } %>
+      </li>
+      <% }) %>
+    </ul>
+  </div>
+
+  <!-- Add New Admin Form -->
+  <div class="bg-white p-8 rounded-md shadow mb-4">
+    <form action="/admin/settings/add-admin" method="POST" class="mb-8">
+      <h2 class="text-lg font-bold mb-4">Add New Admin</h2>
+      <input
+        type="text"
+        name="name"
+        placeholder="Name"
+        class="border rounded-md p-2 w-full mb-4"
+        required
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        class="border rounded-md p-2 w-full mb-4"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        class="border rounded-md p-2 w-full mb-4"
+        required
+      />
+      <input type="hidden" name="creator" value="<%= adminName %>" />
+      <!-- Admin who created this admin -->
+      <button
+        type="submit"
+        class="bg-green-500 text-white px-4 py-2 rounded-md"
+      >
+        Add Admin
+      </button>
+    </form>
+  </div>
+
+  <!-- Change Password Form -->
+  <div class="bg-white p-8 rounded-md shadow mb-4">
+    <form action="/admin/settings/change-password" method="POST" class="mb-8">
+      <h2 class="text-lg font-bold mb-4">Change Password</h2>
+      <input
+        type="password"
+        name="currentPassword"
+        placeholder="Current Password"
+        class="border rounded-md p-2 w-full mb-4"
+        required
+      />
+      <input
+        type="password"
+        name="newPassword"
+        placeholder="New Password"
+        class="border rounded-md p-2 w-full mb-4"
+        required
+      />
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">
+        Change Password
+      </button>
+    </form>
+  </div>
+
+  <!-- Delete Current Admin Form -->
+  <div class="bg-white p-8 rounded-md shadow mb-4">
+    <form action="/admin/settings/delete-account" method="POST" class="mb-8">
+      <h2 class="text-lg font-bold mb-4">Delete Your Account</h2>
+      <p class="mb-4">
+        Are you sure you want to delete your account? This action cannot be
+        undone.
+      </p>
+      <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md">
+        Delete My Account
+      </button>
+    </form>
+  </div>
+</div>

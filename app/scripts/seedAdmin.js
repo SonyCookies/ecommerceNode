@@ -2,9 +2,9 @@ const { Admin } = require('../models'); // Adjust the path as needed
 const bcrypt = require('bcrypt');
 
 const createAdmin = async () => {
-  const name = 'Admin2';
-  const email = 'admin@gmail.com';
-  const password = 'admin123'; 
+  const name = 'Edward Gatbonton';
+  const email = 'edward@gmail.com';
+  const password = 'edward123'; 
 
   const hashedPassword = await bcrypt.hash(password, 10);
 

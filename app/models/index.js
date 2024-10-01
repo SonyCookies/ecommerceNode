@@ -27,12 +27,15 @@ const applyAssociations = () => {
   Address.belongsTo(User, { foreignKey: "userId", as: "user" });
   Payment.belongsTo(Order, { foreignKey: "orderId", as: "order" });
 
-  Admin.hasMany(Order, {foreignKey: "adminId", as: "orders"})
+  Admin.hasMany(Order, {foreignKey: "adminId", as: "orders"});
+  Admin.belongsTo(Admin, {foreignKey: 'createdById', as: 'creator',  });
+
 };
 
 applyAssociations();
 
 module.exports = {
+  sequelize,
   User,
   Product,
   Category,

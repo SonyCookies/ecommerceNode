@@ -7,7 +7,7 @@
       <div>
         <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-800 mx-4">Dashboard</a>
         <a href="/admin/products" class="text-gray-600 hover:text-gray-800 mx-4">Products</a>
-        <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a>
+        <!-- <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a> -->
         <a href="/admin/settings" class="text-gray-600 hover:text-gray-800 mx-4">Settings</a>
         <a href="/admin/logout" class="text-gray-600 hover:text-gray-800 mx-4">Logout</a>
       </div>
@@ -40,22 +40,22 @@
   </form>
 
   <div class="mb-4 flex">
-    <a href="/admin/add-product" class="px-4 py-2 rounded-md text-white bg-blue-500">Add Product</a>
+    <a href="/admin/add-product" class="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 active:bg-blue-700">Add Product</a>
   </div>
 
   <!-- Products Table -->
   <table class="min-w-full bg-white rounded-lg shadow-md border-collapse border border-slate-500 table-auto">
     <thead class="p-4">
       <tr class="p-4">
-        <th class="p-4">Name</th>
-        <th class="p-4">Category</th>
-        <th class="p-4">Price</th>
-        <th class="p-4">Stock</th>
-        <th class="p-4">Actions</th>
+        <th class="py-4 px-6">Name</th>
+        <th class="py-4 px-6">Category</th>
+        <th class="py-4 px-6">Price</th>
+        <th class="py-4 px-6">Stock</th>
+        <th class="py-4 px-6">Actions</th>
       </tr>
     </thead>
     <!-- Include the product table partial -->
-    <%- include('partials/_productTable', { products }) %>
+    <%- include('partials/admin_products', { products }) %>
   </table>
 </div>
 

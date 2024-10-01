@@ -6,36 +6,87 @@
           <div>
               <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-800 mx-4">Dashboard</a>
               <a href="/admin/products" class="text-gray-600 hover:text-gray-800 mx-4">Products</a>
-              <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a>
+              <!-- <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a> -->
               <a href="/admin/settings" class="text-gray-600 hover:text-gray-800 mx-4">Settings</a>
-              
               <a href="/admin/logout" class="text-gray-600 hover:text-gray-800 mx-4">Logout</a>
           </div>
       </div>
   </div>
 </nav>
 
-<!-- Hero Section -->
- <!-- graphs for -->
-<div class="bg-blue-500 text-white py-20 text-center mx-auto">
-  
-</div>
+<div class="max-w-7xl mx-auto px-4 py-8 ">
+  <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
 
-<!-- Featured Categories -->
-<div class="max-w-7xl mx-auto px-4 py-10">
-  <h2 class="text-2xl font-bold text-center mb-6">Featured Categories</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    
+  <!-- Charts Section -->
+  <div class="flex space-x-4" style="height: 400px;">
+    <!-- Products Distribution by Category -->
+    <div class="bg-white shadow rounded-lg p-6 w-auto">
+      <h2 class="text-lg font-bold mb-4">Products by Category</h2>
+      <canvas id="productCategoryChart" ></canvas>
+    </div>
+
+    <!-- Top Categories by Product Count -->
+    <div class="bg-white w-1/2 shadow rounded-lg p-6">
+      <h2 class="text-lg font-bold mb-4">Top Categories by Product Count</h2>
+      <canvas id="topCategoriesChart" ></canvas>
+    </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Use EJS to safely embed the server-side data as JSON
+  const categoryNames = <%- JSON.stringify(categoryNames) %>;
+  const productCounts = <%- JSON.stringify(productCounts) %>;
 
-<div class="max-w-7xl mx-auto px-4 py-10">
-  <h2 class="text-2xl font-bold text-center mb-6">Featured Products</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-  </div>
-</div>
+  console.log('Category Names:', categoryNames);
+  console.log('Product Counts:', productCounts);
 
+  // Product Distribution by Category Chart
+  // Product Distribution by Category Chart
+const ctx1 = document.getElementById('productCategoryChart').getContext('2d');
+new Chart(ctx1, {
+  type: 'doughnut',
+  data: {
+    labels: categoryNames,
+    datasets: [{
+      label: 'Products by Category',
+      data: productCounts,
+      backgroundColor: [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+      ],
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true, // Ensure the chart keeps its aspect ratio
+  }
+});
 
-</body>
-</html>
+// Top Categories by Product Count Chart
+const ctx2 = document.getElementById('topCategoriesChart').getContext('2d');
+new Chart(ctx2, {
+  type: 'bar',
+  data: {
+    labels: categoryNames,
+    datasets: [{
+      label: 'Number of Products',
+      data: productCounts,
+      backgroundColor: '#36A2EB',
+      borderColor: '#36A2EB',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true, // Ensure the chart keeps its aspect ratio
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+</script>
+

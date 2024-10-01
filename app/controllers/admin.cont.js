@@ -1,7 +1,7 @@
-const { Admin } = require("../models"); // Adjust the path as needed
+const { Admin, sequelize } = require("../models");
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
-const { Product, Category } = require("../models"); // Adjust the path
+const { Product, Category } = require("../models"); 
 
 // admin login
 exports.admin = (req, res) => {
@@ -28,10 +28,9 @@ exports.adminLogin = async (req, res) => {
       req.session.adminId = admin.id;
       req.session.adminName = admin.name;
 
-      // Successful login logic (e.g., setting session)
       console.log("Succesful login");
-      console.log("Logged in:", req.session); // Log session after login
-      res.redirect("/admin/dashboard"); // Redirect to the admin dashboard
+      console.log("Logged in:", req.session);
+      res.redirect("/admin/dashboard");
     } else {
       res.render("admin_login", { errorMessage: "Invalid credentials" });
     }
@@ -44,21 +43,53 @@ exports.adminLogin = async (req, res) => {
 };
 
 // dashboard
-exports.adminDashboard = (req, res) => {
-  if (!req.session.adminId) {
-    return res.redirect("/admin/admin-login");
-  }
+exports.adminDashboard = async (req, res) => {
+  try {
+    if (!req.session.adminId) {
+      return res.redirect("/admin/admin-login");
+    }
 
-  res.render("admin_dashboard", { adminName: req.session.adminName });
+    const products = await Product.findAll({
+      include: [
+        {
+          model: Category,
+          as: "category", 
+        },
+      ],
+    });
+
+    const categoryNames = [];
+    const productCounts = [];
+
+    // Aggregate products by category
+    products.forEach((product) => {
+      const categoryName = product.category.name; 
+      const index = categoryNames.indexOf(categoryName);
+
+      if (index === -1) {
+        categoryNames.push(categoryName);
+        productCounts.push(1); 
+      } else {
+        productCounts[index] += 1;
+      }
+    });
+
+    res.render("admin_dashboard", {
+      categoryNames,
+      productCounts,
+      adminName: req.session.adminName,
+    });
+  } catch (error) {
+    console.error("Error fetching data for dashboard:", error);
+    res.status(500).send("Server error");
+  }
 };
 
 // admin product
-
 exports.adminAllProducts = async (req, res) => {
   try {
     const { search, sort, category } = req.query;
 
-    // Build the query filters
     let where = {};
     if (search) {
       where.name = { [Op.like]: `%${search}%` };
@@ -67,38 +98,81 @@ exports.adminAllProducts = async (req, res) => {
       where.categoryId = category;
     }
 
-    // Determine sorting
     let order = [];
-    if (sort === 'price-asc') {
-      order.push(['price', 'ASC']);
-    } else if (sort === 'price-desc') {
-      order.push(['price', 'DESC']);
+    if (sort === "price-asc") {
+      order.push(["price", "ASC"]);
+    } else if (sort === "price-desc") {
+      order.push(["price", "DESC"]);
     }
 
-    // Fetch products with optional filters
     const products = await Product.findAll({
       where,
-      include: [{ model: Category, as: 'category' }],
+      include: [{ model: Category, as: "category" }],
       order,
     });
 
-    // If the request is AJAX, return only the table partial
     if (req.xhr) {
-      return res.render('partials/admin_products', { products }, (err, html) => {
-        if (err) {
-          return res.status(500).send('Error rendering partial');
+      return res.render(
+        "partials/admin_products",
+        { products },
+        (err, html) => {
+          if (err) {
+            return res.status(500).send("Error rendering partial");
+          }
+          res.send(html);
         }
-        res.send(html); // Send the rendered partial HTML
-      });
+      );
     }
 
-    // Otherwise, render the full page with the partial included
     const categories = await Category.findAll();
-    res.render('admin_products', { products, categories, search, sort, selectedCategory: category });
+    res.render("admin_products", {
+      products,
+      categories,
+      search,
+      sort,
+      selectedCategory: category,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
+};
+
+
+exports.adminProductsPartial = async (req, res) => {
+  const { search, sort, category } = req.query;
+
+  // default
+  let queryOptions = {
+    where: {},
+    include: [
+      {
+        model: Category,
+        as: "category",
+      },
+    ],
+  };
+
+  // searc
+  if (search) {
+    queryOptions.where.name = { [Op.like]: `%${search}%` };
+  }
+
+  // category
+  if (category) {
+    queryOptions.where.categoryId = category;
+  }
+
+  // sorting
+  if (sort === "price-asc") {
+    queryOptions.order = [["price", "ASC"]];
+  } else if (sort === "price-desc") {
+    queryOptions.order = [["price", "DESC"]];
+  }
+
+  const products = await Product.findAll(queryOptions);
+
+  res.render("partials/admin_products", { products });
 };
 
 exports.adminProductEdit = async (req, res) => {
@@ -139,11 +213,11 @@ exports.adminProductDelete = async (req, res) => {
 
 exports.adminAddProduct = async (req, res) => {
   try {
-    const categories = await Category.findAll(); // Fetch categories for dropdown
-    res.render('admin_add_product', { categories });
+    const categories = await Category.findAll();
+    res.render("admin_add_product", { categories });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
@@ -152,29 +226,26 @@ exports.adminCreateProduct = async (req, res) => {
     const { name, price, stock, categoryId } = req.body;
 
     if (!name || !price || !stock || !categoryId) {
-      // return res.status(400).send('All fields are required');
-      const categories = await Category.findAll(); // Fetch categories again
-      return res.render('admin/add-product', {
+      const categories = await Category.findAll(); 
+      return res.render("admin/add-product", {
         categories,
-        errorMessage: 'All fields are required',
+        errorMessage: "All fields are required",
       });
     }
 
     await Product.create({
       name,
-      price: parseFloat(price), // Convert price to a number
-      stock: parseInt(stock, 10), // Convert stock to an integer
-      categoryId
+      price: parseFloat(price), 
+      stock: parseInt(stock, 10), 
+      categoryId,
     });
 
-    res.redirect('/admin/products'); // Redirect to the products list page
+    res.redirect("/admin/products"); 
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
-
-
 
 // logout
 exports.adminLogout = (req, res) => {
@@ -186,4 +257,120 @@ exports.adminLogout = (req, res) => {
     res.redirect("/admin/admin-login");
     console.log("Logout successfully");
   });
+};
+
+// settings
+exports.adminSettings = async (req, res) => {
+  try {
+    if (!req.session.adminId) {
+      return res.redirect("/admin/admin-login");
+    }
+
+    const admins = await Admin.findAll({
+      include: [
+        {
+          model: Admin, 
+          as: 'creator', 
+          attributes: ['name'], 
+        },
+      ],
+      attributes: ['id', 'name', 'email', 'createdById'], // Fields for each admin
+    });
+    
+    const adminName = req.session.adminName; // Admin's name from session
+    const currentAdminId = req.session.adminId; // Current admin's ID
+    console.log("Admins fetched:", admins);
+
+    res.render("admin_settings", { admins, adminName, currentAdminId });
+  } catch (error) {
+    console.error("Error fetching admin settings:", error);
+    res.status(500).send("admin error");
+  }
+};
+
+exports.adminChangePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const adminId = req.session.adminId;
+
+  try {
+    const admin = await Admin.findByPk(adminId);
+
+    // Check if current password matches
+    const match = await bcrypt.compare(currentPassword, admin.password);
+    if (!match) {
+      return res.status(401).send("Current password is incorrect.");
+    }
+
+    // Hash the new password and save it
+    admin.password = await bcrypt.hash(newPassword, 10);
+    await admin.save();
+
+    res.redirect("/admin/settings"); // Redirect back to settings
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).send("change password error");
+  }
+};
+
+exports.adminDeleteAccount = async (req, res) => {
+  const adminId = req.session.adminId;
+
+  try {
+    const admin = await Admin.findByPk(adminId);
+    if (admin) {
+      await admin.destroy();
+      req.session.destroy(); // Clear session after deleting account
+    }
+
+    res.redirect('/admin/admin-login'); // Redirect to login page after deletion
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    res.status(500).send("delete current admin error");
+  }
+};
+
+exports.adminDelete = async (req, res) => {
+  const { adminId } = req.body; // Get the adminId from the request body
+
+  try {
+    if (!req.session.adminId) {
+      return res.redirect("/admin/admin-login");
+    }
+
+    // Prevent deleting the current admin
+    if (req.session.adminId === adminId) {
+      return res.status(403).send("You cannot delete your own account.");
+    }
+
+    const admin = await Admin.findByPk(adminId);
+    if (admin) {
+      await admin.destroy();
+    }
+
+    res.redirect("/admin/settings"); // Redirect after successful deletion
+  } catch (error) {
+    console.error("Error deleting admin:", error);
+    res.status(500).send("delete admin error");
+  }
+};
+
+exports.adminAdd = async (req, res) => {
+  const { name, email, password, creator } = req.body; // Get the form data
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newAdmin = await Admin.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    // Optionally log or notify the creator
+    console.log(`${creator} added a new admin: ${newAdmin.name}`);
+
+    res.redirect("/admin/settings"); // Redirect after successful addition
+  } catch (error) {
+    console.error("Error adding admin:", error);
+    res.status(500).send("add admin error");
+  }
 };

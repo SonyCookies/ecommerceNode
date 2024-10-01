@@ -1,15 +1,15 @@
 <!-- views/partials/_productTable.ejs -->
 <tbody class="text-center">
   <% products.forEach(product => { %>
-    <tr>
-      <td class="py-2 px-4"><%= product.name %></td>
-      <td class="py-2 px-4"><%= product.category.name %></td>
-      <td class="py-2 px-4">$<%= product.price.toFixed(2) %></td>
-      <td class="py-2 px-4"><%= product.stock %></td>
-      <td class="py-2 px-4">
-        <a href="/admin/products/edit/<%= product.id %>?" class="text-blue-600">Edit</a> |
-        <form action="/admin/products/delete/<%= product.id %>?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit" class="text-red-600">Delete</button>
+    <tr class="border-b">
+      <td class="py-4 px-6"><%= product.name %></td>
+      <td class="py-4 px-6"><%= product.category.name %></td>
+      <td class="py-4 px-6">$<%= product.price.toFixed(2) %></td>
+      <td class="py-4 px-6"><%= product.stock %></td>
+      <td class="py-4 px-6 flex items-center w-full justify-center space-x-2">
+        <a href="/admin/products/edit/<%= product.id %>?" class="text-white px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 py-2 rounded">Edit</a>
+        <form action="/admin/products/delete/<%= product.id %>?_method=DELETE" method="POST">
+          <button type="submit" class="bg-red-500 hover:bg-red-600 active:bg-red-700 text-white px-4 py-2 rounded">Delete</button>
         </form>
       </td>
     </tr>
