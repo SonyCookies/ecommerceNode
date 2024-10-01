@@ -1,14 +1,12 @@
 <%- include('partials/head') %>
 <%- include('partials/navbar') %>
 
-<!-- Product Listing Section -->
 <div class="max-w-7xl mx-auto px-4 py-8">
   <h1 class="text-2xl font-bold mb-6">Products</h1>
   
   <div class="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow-md">
     <form id="filterForm" class="flex items-center space-x-4 w-full">
       
-      <!-- Category Dropdown -->
       <select name="categoryId" class="border border-gray-300 rounded-md p-2 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="loadProducts()">
         <option value="">All Categories</option>
         <% categories.forEach(category => { %>
@@ -16,25 +14,23 @@
         <% }); %>
       </select>
   
-      <!-- Sort By Dropdown -->
       <select name="sort" class="border border-gray-300 rounded-md p-2 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="loadProducts()">
         <option value="">Sort By</option>
         <option value="price-asc">Price: Low to High</option>
         <option value="price-desc">Price: High to Low</option>
       </select>
       
-      <!-- Search Input -->
       <input type="text" name="search" placeholder="Search products..." class="border border-gray-300 rounded-md p-2 flex-grow transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="loadProducts()">
       
     </form>
   </div>
   
-  <!-- Include the product grid partial -->
   <div id="productGrid">
     <%- include('partials/productGrid', { products }) %>
   </div>
 </div>
 
+  
 <%- include('partials/footer') %>
 
 <script>
@@ -50,3 +46,7 @@
       .catch(error => console.error('Error loading products:', error));
   }
 </script>
+  
+  
+  
+  

@@ -1,0 +1,77 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+    <h1 class="text-2xl font-semibold text-center mb-4">Confirm Your Order</h1>
+    <form id="confirm-order-form" class="space-y-4">
+      <div class="space-y-2">
+        <label for="paymentMethod" class="block font-medium">Select Payment Method:</label>
+        <select id="paymentMethod" class="border p-2 rounded-md w-full">
+          <option value="credit_card">Credit Card</option>
+          <option value="paypal">PayPal</option>
+          <option value="bank_transfer">Bank Transfer</option>
+        </select>
+      </div>
+      <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-md hover:bg-green-600 transition duration-200">
+        Confirm Order
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal HTML -->
+<div id="confirmationModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-1/3">
+    <div class="flex justify-end">
+      <button id="closeModal" class="text-gray-600 hover:text-gray-900">&times;</button>
+    </div>
+    <div class="text-center">
+      <h2 class="text-2xl font-semibold mb-4">Payment Confirmed!</h2>
+      <p class="text-lg mb-6">Your order has been successfully placed.</p>
+      <button id="goToOrders" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+        Go to Orders
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('confirm-order-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('orderId');
+
+    fetch('/checkout/confirm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ orderId, paymentMethod }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Show the modal when payment is confirmed
+          document.getElementById('confirmationModal').classList.remove('hidden');
+        } else {
+          alert('Error confirming order.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  });
+
+  // Close modal and redirect to orders page
+  document.getElementById('goToOrders').addEventListener('click', function () {
+    window.location.href = '/orders';
+  });
+
+  document.getElementById('closeModal').addEventListener('click', function () {
+    document.getElementById('confirmationModal').classList.add('hidden');
+  });
+</script>
+</body>
+</html>
