@@ -1,26 +1,25 @@
 <%- include('partials/head') %>
 
 <nav class="bg-white shadow sticky top-0">
-    <div class="max-w-7xl mx-auto px-4 py-4">
-        <div class="flex items-center justify-between">
-            <div class="text-lg font-bold">Admin</div>
-            <div>
-                <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-800 mx-4">Dashboard</a>
-                <a href="/admin/products" class="text-gray-600 hover:text-gray-800 mx-4">Products</a>
-                <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a>
-                <a href="/admin/settings" class="text-gray-600 hover:text-gray-800 mx-4">Settings</a>
-                
-                <a href="/admin/logout" class="text-gray-600 hover:text-gray-800 mx-4">Logout</a>
-            </div>
-        </div>
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="flex items-center justify-between">
+      <div class="text-lg font-bold">Admin</div>
+      <div>
+        <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-800 mx-4">Dashboard</a>
+        <a href="/admin/products" class="text-gray-600 hover:text-gray-800 mx-4">Products</a>
+        <a href="/admin/inventory" class="text-gray-600 hover:text-gray-800 mx-4">Inventory</a>
+        <a href="/admin/settings" class="text-gray-600 hover:text-gray-800 mx-4">Settings</a>
+        <a href="/admin/logout" class="text-gray-600 hover:text-gray-800 mx-4">Logout</a>
+      </div>
     </div>
+  </div>
 </nav>
 
 <div class="max-w-7xl mx-auto px-4 py-8">
   <h1 class="text-2xl font-bold mb-6">Products</h1>
 
   <!-- Search and Filter Form -->
-  <form id="filterForm" method="GET" action="/admin/products" class="mb-8 flex justify-between items-center">
+  <form id="filterForm" class="mb-8 flex justify-between items-center">
     <div class="flex space-x-4 w-full">
       <select id="sort" name="sort" class="border rounded-md p-2">
         <option value="default">Sort by</option>
@@ -41,13 +40,23 @@
   </form>
 
   <div class="mb-4 flex">
-    <a href="/admin/add-product" class="px-4  py-2 rounded-md text-white bg-blue-500">Add Product</a>
+    <a href="/admin/add-product" class="px-4 py-2 rounded-md text-white bg-blue-500">Add Product</a>
   </div>
 
-  <!-- Include the Products Table Partial -->
-  <div id="productsTable">
-    <%- include('partials/admin_products', { products: products }) %>
-  </div>
+  <!-- Products Table -->
+  <table class="min-w-full bg-white rounded-lg shadow-md border-collapse border border-slate-500 table-auto">
+    <thead class="p-4">
+      <tr class="p-4">
+        <th class="p-4">Name</th>
+        <th class="p-4">Category</th>
+        <th class="p-4">Price</th>
+        <th class="p-4">Stock</th>
+        <th class="p-4">Actions</th>
+      </tr>
+    </thead>
+    <!-- Include the product table partial -->
+    <%- include('partials/_productTable', { products }) %>
+  </table>
 </div>
 
 <script>
@@ -55,10 +64,10 @@
     const searchInput = document.getElementById('search');
     const sortSelect = document.getElementById('sort');
     const categorySelect = document.getElementById('category');
-    const productsTable = document.getElementById('productsTable');
+    const productsTable = document.querySelector('table tbody'); // Select only the tbody
 
-    let typingTimer; // Timer identifier for debouncing
-    const typingInterval = 100; // Delay in ms (300ms)
+    let typingTimer; // Timer for debouncing
+    const typingInterval = 300; // 300ms debounce delay
 
     // Function to fetch products and update the table
     function fetchProducts() {
@@ -70,24 +79,23 @@
       const xhr = new XMLHttpRequest();
       const queryParams = `search=${searchQuery}&sort=${sortQuery}&category=${categoryQuery}`;
       xhr.open('GET', `/admin/products/partial?${queryParams}`, true);
-      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // To detect an AJAX request
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       xhr.onload = function() {
         if (xhr.status === 200) {
-          // Replace the products table with the new data (partial reload)
+          // Replace the products table body with the new data
           productsTable.innerHTML = xhr.responseText;
         }
       };
       xhr.send();
     }
 
-    // Add event listeners for real-time interaction
+    // Event listeners for real-time search, sort, and filter
     searchInput.addEventListener('input', function() {
-      clearTimeout(typingTimer); // Clear the previous timer
-      typingTimer = setTimeout(fetchProducts, typingInterval); // Set a new timer
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(fetchProducts, typingInterval);
     });
-    
+
     sortSelect.addEventListener('change', fetchProducts);
     categorySelect.addEventListener('change', fetchProducts);
   });
 </script>
-
