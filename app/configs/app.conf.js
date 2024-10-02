@@ -1,10 +1,12 @@
 const express = require("express");
+const flash = require("connect-flash");
 const path = require("path");
 const indexR = require("../routes/index.route");
 const productR = require("../routes/product.route");
 const cartR = require("../routes/cart.route");
-const checkoutR = require("../routes/checkout.route.js");
-const orderR = require("../routes/order.route.js");
+const checkoutR = require("../routes/checkout.route");
+const orderR = require("../routes/order.route");
+const userR = require("../routes/user.route");
 const session = require("express-session");
 
 const app = express();
@@ -26,6 +28,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(flash());
+
 app.set("view engine", "ejs");
 app.set("views", path.join("app", "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -39,5 +43,6 @@ app.use("/products", productR);
 app.use("/cart", cartR);
 app.use("/checkout", checkoutR);
 app.use("/orders", orderR);
+app.use("/user", userR);
 
 module.exports = app;
