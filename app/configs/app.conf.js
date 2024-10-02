@@ -1,8 +1,10 @@
 const express = require("express");
 const flash = require("connect-flash");
 const path = require("path");
+const session = require('express-session')
 const indexR = require("../routes/index.route");
 const productR = require("../routes/product.route");
+const adminR = require('../routes/admin.route')
 const cartR = require("../routes/cart.route");
 const checkoutR = require("../routes/checkout.route");
 const orderR = require("../routes/order.route");
@@ -40,6 +42,7 @@ app.use("/src", express.static(path.join(__dirname, "src")));
 app.use(express.json());
 app.use("/", indexR);
 app.use("/products", productR);
+app.use('/admin', adminR);
 app.use("/cart", cartR);
 app.use("/checkout", checkoutR);
 app.use("/orders", orderR);

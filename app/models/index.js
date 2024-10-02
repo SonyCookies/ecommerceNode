@@ -10,6 +10,7 @@ const Order = require("./Order")(sequelize, DataTypes);
 const OrderItem = require("./OrderItem")(sequelize, DataTypes);
 const Address = require("./Address")(sequelize, DataTypes);
 const Payment = require("./Payment")(sequelize, DataTypes);
+const Admin = require('./Admin')(sequelize, DataTypes);
 const Cart = require("./Cart")(sequelize, DataTypes);
 const CartItem = require("./CartItem")(sequelize, DataTypes);
 
@@ -42,6 +43,8 @@ const applyAssociations = () => {
   // Payment associations
   Payment.belongsTo(Order, { foreignKey: "orderId", as: "order" });
 
+  Admin.hasMany(Order, {foreignKey: "adminId", as: "orders"});
+  Admin.belongsTo(Admin, {foreignKey: 'createdById', as: 'creator',  });
   // Cart associations
   Cart.belongsTo(User, { foreignKey: "userId", as: "user" }); // Each cart belongs to a user
   Cart.belongsToMany(Product, { through: CartItem, as: "products" }); // Each cart can have many products
@@ -50,6 +53,7 @@ const applyAssociations = () => {
 applyAssociations();
 
 module.exports = {
+  sequelize,
   User,
   Product,
   Category,
@@ -57,6 +61,7 @@ module.exports = {
   OrderItem,
   Address,
   Payment,
+  Admin,
   Cart,
   CartItem,
 };
