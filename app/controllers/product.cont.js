@@ -1,11 +1,10 @@
-
 const { Product, Category } = require("../models");
 const { Op } = require("sequelize");
 
 module.exports = {
   index: async (req, res) => {
-    const categoryId = req.query.categoryId || null; 
-    const searchQuery = req.query.search || ""; 
+    const categoryId = req.query.categoryId || null;
+    const searchQuery = req.query.search || "";
 
     try {
       const products = await Product.findAll({
@@ -16,8 +15,8 @@ module.exports = {
         include: [
           {
             model: Category,
-            as: "category", 
-            attributes: ["name"], 
+            as: "category",
+            attributes: ["name"],
           },
         ],
       });
@@ -27,7 +26,7 @@ module.exports = {
       res.render("products", {
         products,
         categories,
-        selectedCategoryId: categoryId, 
+        selectedCategoryId: categoryId,
         searchQuery,
       });
     } catch (error) {
@@ -70,4 +69,21 @@ module.exports = {
       res.status(500).send("Server Error");
     }
   },
+
+  view: async (req, res) => {
+    const productId = req.params.id;
+
+    try {
+      const product = await Product.findByPk(productId);
+
+      if (!product) {
+        return res.status(404).send("Product not found");
+      }
+
+      res.render('product_view', { product });
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+      res.status(500).send("Server Error");
+    }
+  }
 };

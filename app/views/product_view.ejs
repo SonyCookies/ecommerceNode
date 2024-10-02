@@ -1,0 +1,40 @@
+<%- include('partials/head') %> 
+<%- include('partials/navbar') %>
+
+<div class="max-w-7xl mx-auto px-4 py-10">
+  <!-- Back Button -->
+  <div class="mb-4">
+    <a href="javascript:history.back()" class="text-blue-500 hover:underline flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 mr-2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to Products
+    </a>
+  </div>
+
+  <div class="bg-white shadow-md rounded-lg overflow-hidden flex flex-col md:flex-row">
+    <!-- Product Image -->
+    <div class="md:w-1/2">
+      <img
+        src="https://via.placeholder.com/600"
+        alt="<%= product.name %>"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <div class="p-6 md:w-1/2">
+      <h1 class="text-3xl font-bold mb-4"><%= product.name %></h1>
+      <p class="text-gray-700 text-xl mb-4">$<%= product.price.toFixed(2) %></p>
+
+      <p class="text-gray-600 mb-6"><%= product.description %></p>
+
+      <button
+        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+      >
+        Add to Cart
+      </button>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
